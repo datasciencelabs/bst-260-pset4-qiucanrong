@@ -57,7 +57,7 @@ request <- request(url) |>
 
 
 ```{r}
-response <- request |> req_perform()
+response <- req_perform(request)
 resp_status(response)
 ```
 
@@ -119,9 +119,8 @@ population
 
 population |>
   ggplot(aes(x = reorder(state_name, population), 
-             y = population, 
-             fill = state)) +
-  geom_col(show.legend = FALSE) +
+             y = population)) +
+  geom_col() +
   coord_flip() +
   facet_wrap(~ year) +
   labs(
@@ -129,7 +128,8 @@ population |>
     x = "State",
     y = "Population"
   ) +
-  theme_light()
+  theme_light() +
+  theme(axis.text.y = element_text(angle = 15, hjust = 1, size = 4))
 ```
 
 
@@ -166,7 +166,7 @@ regions
 9. Add a region and region name columns to the `population` data frame.
 
 ```{r}
-population <- population |> left_join(regions, by = "state_name")
+population <- left_join(population, regions, by = "state_name")
 population
 ```
 
@@ -212,15 +212,16 @@ cases |> mutate(year = year(date)) |>
   drop_na(date, cases, population) |>
 
   ggplot(aes(x = date, y = cases / population * 100000, group = state, color = state)) +
-  geom_line() +
-  facet_wrap(~ region_name) +
+  geom_line(show.legend = FALSE) +
+  facet_wrap(~ region_name, ncol = 4) +
   labs(
     title = "COVID-19 Cases per 100,000 People by State (2020–2021)",
     x = "Date",
     y = "New Cases per 100,000",
     color = "State"
   ) +
-  theme_light()
+  theme_light() +
+  theme(axis.text.x = element_text(angle = 25, hjust = 1, size = 5))
 ```
 
 13. The dates in the `cases` dataset are stored as character strings. Use the **lubridate** package to properly parse the `date` column, then create a summary table showing the total COVID-19 cases by month and year for 2020 and 2021. The table should have columns for year, month (as month name), and total cases across all states. Order by year and month. Use the **knitr** package and `kable()` function to display the results as a formatted table.
